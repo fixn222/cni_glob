@@ -43,7 +43,7 @@ const NavBar = () => {
                                 </button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                                <div className="w-full flex flex-col items-center text-center space-y-2 mt-3">
+                                <div className="w-full flex flex-col items-center text-center space-y-3 mt-3">
                                     {CLIENT_NAV.map((nav) => {
 
                                         const Icon = nav.icon;
@@ -54,6 +54,8 @@ const NavBar = () => {
                                                 <div key={nav.title} className="flex flex-col justify-center items-center gap-2">
                                                     <Icon size={18} />
                                                     <span className="hover:bg-blue-400">{nav.title}</span>
+
+
                                                 </div>
 
                                             </DropdownMenuItem>
@@ -66,6 +68,7 @@ const NavBar = () => {
 
 
                     </div>
+                    <ThemeToggle className='' />
 
 
                 </div>

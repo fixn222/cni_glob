@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function ThemeToggle() {
+export default function ThemeToggle({className} : { className? :string}) {
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => setDark(!dark)}
-      className="p-3 mr-5 rounded-full border-2  text-primary-foreground"
+      className={`p-3 mr-5 rounded-full border-2  text-primary-foreground ${className}`}
     >
       {dark ? "🌙 " : "☀️"}
     </button>

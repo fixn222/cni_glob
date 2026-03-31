@@ -1,6 +1,6 @@
 // import React from 'react'
 
-import PixelCard from "./PixelCard";
+// import PixelCard from "./PixelCard";
 import { Button } from "./ui/button";
 
 export interface CardProps {
@@ -12,26 +12,45 @@ export interface CardProps {
     popular?: boolean;
 }
 
+// cimport { Button } from "./ui/button";
+
 const ContriesCard = ({ code, name, visaType, image, flag, popular }: CardProps) => {
     return (
+        <div className="flex flex-col p-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-xl hover:scale-[1.03] transition duration-300">
 
-        <div className="flex  flex-col p-10 border-2 backdrop-blur-2xl  shadow-2xl items-center justify-center ">
-            <div className="flex flex-col justify-center items-center">
-                <img src={image} alt="" className="w-full h-[100px]" />
-                <span className="font-bold mt-3 text-sm mb-5">
-                    {name}
-                </span>
-                <p className="font-poppins font-bold text-sm">
-                    {visaType}
-                </p>
-                <p className="font-poppins  text-center text-2xl">
-                    {flag}
-                </p>
-                <Button className="mt-5" >Apply now</Button>
+            {/* Image */}
+            <img
+                src={image}
+                alt={name}
+                className="w-full h-[120px] object-cover rounded-xl"
+            />
+
+            {/* Content */}
+            <div className="flex flex-col items-center mt-4 text-center">
+
+                {/* Country Name */}
+                <span className="font-bold text-base">{name}</span>
+
+                {/* Visa Types */}
+                <div className="flex flex-wrap justify-center gap-2 mt-3">
+
+                    <span
+
+                        className="text-xs px-2 py-1 rounded-md bg-white/10 border border-white/10"
+                    >
+                        {visaType}
+                    </span>
+
+                </div>
+
+                {/* Flag */}
+                <div className="text-2xl mt-3">{flag}</div>
+
+                {/* Button */}
+                <Button className="mt-4 w-full">Apply now</Button>
+
             </div>
         </div>
-
-    )
-}
-
+    );
+};
 export default ContriesCard

@@ -1,93 +1,82 @@
-import { CreditCard, EyeIcon, Globe, Upload, WholeWord, WholeWordIcon } from "lucide-react"
-// import React from 'react'
+// Responsive refresh: this section scales its step rail for mobile and adds gentle staggered reveals.
+import { motion } from "motion/react";
+import { CreditCard, EyeIcon, Globe, Upload } from "lucide-react";
 
-import LogoLoop from '../components/LogoLoop';
-import { SiNextdotjs, SiTypescript, SiTailwindcss } from 'react-icons/si';
-import {TbWorldCheck} from 'react-icons/tb'
+import LogoLoop from "../components/LogoLoop";
+
 const techLogos = [
-    { node: <Globe size={50} />, title: "Select Destination", href: "https://react.dev" },
-    { node: <Upload size={50}/>, title: "Upload Details", href: "https://nextjs.org" },
-    { node: <CreditCard size={50} />, title: "Pay Securely", href: "https://www.typescriptlang.org" },
-    { node: <EyeIcon size={50} />, title: "Track Status", href: "https://tailwindcss.com" },
+  { node: <Globe size={40} />, title: "Select Destination", href: "#" },
+  { node: <Upload size={40} />, title: "Upload Details", href: "#" },
+  { node: <CreditCard size={40} />, title: "Pay Securely", href: "#" },
+  { node: <EyeIcon size={40} />, title: "Track Status", href: "#" },
 ];
-
-// Alternative with image sources
-const imageLogos = [
-    { src: "/logos/company1.png", alt: "Company 1", href: "https://company1.com" },
-    { src: "/logos/company2.png", alt: "Company 2", href: "https://company2.com" },
-    { src: "/logos/company3.png", alt: "Company 3", href: "https://company3.com" },
-];
-
-
 
 const CTA = () => {
-    return (
-        <section className="w-full flex flex-col items-center py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+  return (
+    <section className="w-full px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="mx-auto flex w-full max-w-6xl flex-col items-center rounded-[2rem] border border-white/10 bg-white/5 px-5 py-10 text-center shadow-xl backdrop-blur-xl sm:px-8 sm:py-12"
+      >
+        <div className="inline-flex items-center gap-3 rounded-full bg-white/6 px-5 py-2">
+          <Upload size={16} />
+          <span className="text-xs font-semibold tracking-[0.22em] sm:text-sm">
+            HOW IT WORKS
+          </span>
+        </div>
 
-            <div className="flex flex-col items-center text-center space-y-5 max-w-3xl">
+        <h2 className="mt-5 text-balance text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+          Four Simple Steps
+        </h2>
 
-                {/* Badge */}
-                <div className="bg-white/5 backdrop-blur-2xl flex items-center space-x-3 px-5 py-2 rounded-full">
-                    <Upload size={18} />
-                    <span className="font-semibold text-xs sm:text-sm tracking-wide">
-                        HOW IT WORKS
-                    </span>
-                </div>
+        <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
+          From destination selection to visa approval, every stage is designed
+          to stay clear and touch-friendly on smaller screens.
+        </p>
 
-                {/* Heading */}
-                <h1 className="font-poppins text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
-                    Four Simple Steps
-                </h1>
+        <div className="mt-8 w-full overflow-hidden rounded-[1.75rem] border border-white/10 bg-background/70 px-3 py-5 sm:px-5">
+          <LogoLoop
+            logos={techLogos}
+            speed={22}
+            direction="left"
+            logoHeight={40}
+            gap={28}
+            hoverSpeed={0.4}
+            scaleOnHover
+            fadeOut
+            fadeOutColor="transparent"
+            ariaLabel="Visa process steps"
+            renderItem={(item, key) => {
+              const isNode = "node" in item;
 
-                {/* Description */}
-                <p className="text-sm sm:text-base lg:text-lg max-w-[350px] text-muted-foreground">
-                    From country selection to visa approval streamlined for speed and clarity.
-                </p>
+              return (
+                <motion.div
+                  key={key}
+                  whileHover={{ y: -3 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex min-w-[126px] flex-col items-center justify-center rounded-2xl px-3 py-4"
+                >
+                  <div className="rounded-2xl border border-white/10 bg-white/8 p-4 text-3xl shadow-sm">
+                    {isNode ? (
+                      item.node
+                    ) : (
+                      <img src={item.src} alt={item.alt} className="h-8" />
+                    )}
+                  </div>
+                  <span className="mt-3 text-center text-xs font-medium text-muted-foreground sm:text-sm">
+                    {item.title}
+                  </span>
+                </motion.div>
+              );
+            }}
+          />
+        </div>
+      </motion.div>
+    </section>
+  );
+};
 
-                {/* Carousel Container */}
-                <div className="w-[400px] lg:w-full  mt-6">
-                    <LogoLoop
-                        logos={techLogos}
-                        speed={25}
-                        direction="left"
-                        logoHeight={50}
-                        gap={50}
-                        hoverSpeed={0.3}
-                        scaleOnHover
-                        fadeOut
-                        fadeOutColor="transparent"
-                        ariaLabel="Technology partners"
-
-                        renderItem={(item, key) => {
-                            const isNode = "node" in item;
-
-                            return (
-                                <div
-                                    key={key}
-                                    className="flex flex-col items-center justify-center min-w-[90px]"
-                                >
-                                    {/* Logo */}
-                                    <div className="text-3xl sm:text-4xl">
-                                        {isNode ? item.node : (
-                                            <img src={item.src} alt={item.alt} className="h-8" />
-                                        )}
-                                    </div>
-
-                                    {/* Title */}
-                                    <span className="text-xs sm:text-sm mt-2 text-muted-foreground">
-                                        {item.title}
-                                    </span>
-                                </div>
-                            );
-                        }}
-                    />
-
-                </div>
-
-            </div>
-
-        </section>
-    )
-}
-
-export default CTA
+export default CTA;

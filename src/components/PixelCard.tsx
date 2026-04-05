@@ -1,5 +1,6 @@
+// Build support: keep JSX as a type-only import under verbatim module syntax.
 import { useEffect, useRef } from 'react';
-import { JSX } from 'react';
+import type { JSX } from 'react';
 import './PixelCard.css';
 
 class Pixel {

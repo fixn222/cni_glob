@@ -7,7 +7,10 @@ import { SERVICES } from "../lib/constants";
 
 const Service = () => {
   return (
-    <section className="relative overflow-hidden px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+    <section
+      id="services"
+      className="relative overflow-hidden px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
+    >
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,#29a89a26,transparent_60%)]" />
 
       <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-[minmax(320px,460px)_minmax(0,1fr)] lg:gap-16">

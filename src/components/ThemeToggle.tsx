@@ -1,32 +1,35 @@
+// Responsive refresh: the theme toggle now initializes safely and uses a calmer animated control.
 import { useEffect, useState } from "react";
 
-export default function ThemeToggle({className} : { className? :string}) {
+export default function ThemeToggle({ className }: { className?: string }) {
   const [dark, setDark] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    const root = window.document.documentElement;
-
-    if (dark) {
-      root.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      root.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [dark]);
-
-  // load saved theme
   useEffect(() => {
     const saved = localStorage.getItem("theme");
-    if (saved === "dark") setDark(true);
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setDark(saved === "dark" || (!saved && prefersDark));
+    setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    const root = window.document.documentElement;
+    root.classList.toggle("dark", dark);
+    localStorage.setItem("theme", dark ? "dark" : "light");
+  }, [dark, mounted]);
 
   return (
     <button
-      onClick={() => setDark(!dark)}
-      className={`p-3 mr-5 rounded-full border-2  text-primary-foreground ${className}`}
+      type="button"
+      onClick={() => setDark((value) => !value)}
+      className={`flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-base transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/10 ${className ?? ""}`}
+      aria-label="Toggle theme"
     >
-      {dark ? "🌙 " : "☀️"}
+      <span className="transition-transform duration-300">
+        {dark ? "🌙" : "☀️"}
+      </span>
     </button>
   );
 }

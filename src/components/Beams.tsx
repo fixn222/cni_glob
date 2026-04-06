@@ -1,4 +1,12 @@
-import { forwardRef, useImperativeHandle, useEffect, useRef, useMemo, FC, ReactNode } from 'react';
+// Build support: keep React's value and type imports separate for strict TypeScript settings.
+import {
+  forwardRef,
+  useImperativeHandle,
+  useEffect,
+  useRef,
+  useMemo,
+} from 'react';
+import type { FC, ReactNode } from 'react';
 
 import * as THREE from 'three';
 

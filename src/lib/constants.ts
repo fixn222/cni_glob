@@ -8,8 +8,6 @@ import {
   Globe,
   Mail,
   MessageCircle,
-  ShieldCheck,
-  Brain,
 } from "lucide-react";
 
 

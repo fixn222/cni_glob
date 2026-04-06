@@ -5,13 +5,14 @@ import {
   useFormContext,
   type ControllerProps,
   type FieldValues,
+  type Path,
 } from "react-hook-form"
 
 export const Form = FormProvider
 
 export function FormField<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends keyof TFieldValues = keyof TFieldValues
+  TName extends Path<TFieldValues> = Path<TFieldValues>
 >(props: ControllerProps<TFieldValues, TName>) {
   return <Controller {...props} />
 }

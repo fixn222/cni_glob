@@ -172,7 +172,10 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="w-full px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+    <section
+      id="testimonials"
+      className="w-full px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
+    >
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}

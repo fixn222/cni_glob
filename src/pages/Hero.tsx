@@ -7,7 +7,8 @@ import { Button } from "../components/ui/button";
 
 const Hero = () => {
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 pb-14 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:px-8">
+       <section className="relative flex min-h-screen min-h-[100svh] items-center justify-center overflow-hidden px-4 pb-14 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:px-8">
+
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,#29a89a26,transparent_60%)]">
         <Particles
           particleColors={["#ffffff"]}

@@ -1,4 +1,4 @@
-// Responsive refresh: the navigation now uses a mobile-safe menu trigger and softer hover motion.
+// Navigation refresh: the navbar now exposes sign-in and sign-up actions while staying route-aware on desktop and mobile.
 import { motion } from "motion/react";
 import { Brain, Menu } from "lucide-react";
 
@@ -10,9 +10,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { CLIENT_NAV } from "../lib/constants";
+import { ROUTES } from "../lib/routes";
 
-const NavBar = () => {
+const marketingLinks = [
+  { label: "Home", href: ROUTES.HOME },
+  { label: "Services", href: `${ROUTES.HOME}#services` },
+  { label: "Destinations", href: `${ROUTES.HOME}#countries` },
+  { label: "Reviews", href: `${ROUTES.HOME}#testimonials` },
+];
+
+const authLinks = [
+  { label: "Sign In", href: ROUTES.LOGIN, variant: "ghost" as const },
+  { label: "Sign Up", href: ROUTES.REGISTER, variant: "default" as const },
+];
+
+const isActiveRoute = (pathname: string, href: string) => pathname === href;
+
+const NavBar = ({ pathname }: { pathname: string }) => {
+  const onAuthPage =
+    pathname === ROUTES.LOGIN || pathname === ROUTES.REGISTER;
+
   return (
     <motion.nav
       initial={{ opacity: 0, y: -20 }}
@@ -21,7 +38,7 @@ const NavBar = () => {
       className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6"
     >
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between rounded-[1.5rem] border border-white/10 bg-background/80 px-4 py-3 shadow-lg backdrop-blur-xl sm:px-5">
-        <a href="/" className="flex items-center gap-3">
+        <a href={ROUTES.HOME} className="flex items-center gap-3">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-2.5">
             <Brain className="size-5" />
           </div>
@@ -30,17 +47,36 @@ const NavBar = () => {
           </p>
         </a>
 
-        <div className="hidden items-center gap-2 md:flex">
-          {CLIENT_NAV.map((nav) => (
+        <div className="hidden items-center gap-1 md:flex">
+          {marketingLinks.map((link) => (
             <a
-              key={nav.title}
-              href={nav.href}
-              className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/5 hover:text-foreground"
+              key={link.label}
+              href={link.href}
+              className={`rounded-full px-4 py-2 text-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/5 ${
+                pathname === ROUTES.HOME && link.href.includes("#")
+                  ? "text-muted-foreground hover:text-foreground"
+                  : isActiveRoute(pathname, link.href)
+                    ? "bg-white/8 text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+              }`}
             >
-              {nav.title}
+              {link.label}
             </a>
           ))}
-          <ThemeToggle />
+
+          <div className="ml-2 flex items-center gap-2">
+            <ThemeToggle />
+            {authLinks.map((link) => (
+              <Button
+                key={link.label}
+                asChild
+                variant={isActiveRoute(pathname, link.href) ? "default" : link.variant}
+                className="rounded-full px-4"
+              >
+                <a href={link.href}>{link.label}</a>
+              </Button>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
@@ -56,23 +92,30 @@ const NavBar = () => {
                 <Menu className="size-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2">
-              {CLIENT_NAV.map((nav) => {
-                const Icon = nav.icon;
-
-                return (
-                  <DropdownMenuItem
-                    key={nav.title}
-                    asChild
-                    className="rounded-xl px-3 py-3"
-                  >
-                    <a href={nav.href} className="flex items-center gap-3">
-                      <Icon size={18} />
-                      <span>{nav.title}</span>
-                    </a>
-                  </DropdownMenuItem>
-                );
-              })}
+            <DropdownMenuContent align="end" className="w-64 rounded-2xl p-2">
+              {marketingLinks.map((link) => (
+                <DropdownMenuItem
+                  key={link.label}
+                  asChild
+                  className="rounded-xl px-3 py-3"
+                >
+                  <a href={link.href}>{link.label}</a>
+                </DropdownMenuItem>
+              ))}
+              <div className="my-2 h-px bg-border" />
+              {authLinks.map((link) => (
+                <DropdownMenuItem
+                  key={link.label}
+                  asChild
+                  className={`rounded-xl px-3 py-3 ${
+                    isActiveRoute(pathname, link.href) || (onAuthPage && link.href === pathname)
+                      ? "bg-white/8"
+                      : ""
+                  }`}
+                >
+                  <a href={link.href}>{link.label}</a>
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

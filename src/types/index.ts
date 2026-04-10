@@ -22,3 +22,22 @@ export const signUpFormSchema = z
     message: "Passwords must match",
     path: ["confirmPassword"],
   })
+
+export const forgotPasswordFormSchema = z.object({
+  email: z.email("Enter a valid email address"),
+})
+
+export const verifyEmailFormSchema = z.object({
+  otp: z.string().length(6, "Enter the 6-digit code"),
+})
+
+export const resetPasswordFormSchema = z
+  .object({
+    otp: z.string().length(6, "Enter the 6-digit code"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(8, "Confirm your password"),
+  })
+  .refine((values) => values.password === values.confirmPassword, {
+    message: "Passwords must match",
+    path: ["confirmPassword"],
+  })

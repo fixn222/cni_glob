@@ -1,73 +1,129 @@
-# React + TypeScript + Vite
+# Frontend Auth and Session Usage
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This frontend now uses a shared session provider. You do not need to fetch
+`/api/auth/session` manually inside every page.
 
-Currently, two official plugins are available:
+## Where Session State Comes From
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- `SessionProvider` is mounted in [src/main.tsx](/home/fixn/Documents/cni/frontend/src/main.tsx).
+- `useSession()` is re-exported from [src/hooks/useSession.ts](/home/fixn/Documents/cni/frontend/src/hooks/useSession.ts).
+- The provider logic lives in [src/providers/SessionProvider.tsx](/home/fixn/Documents/cni/frontend/src/providers/SessionProvider.tsx).
 
-## React Compiler
+## What `useSession()` Gives You
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Inside any component under `SessionProvider`, you can read:
 
-## Expanding the ESLint configuration
+- `user`: the signed-in user object or `null`
+- `session`: the raw session object from the backend
+- `isAuthenticated`: `true` when the user is signed in
+- `isLoading`: `true` while the app is checking the session
+- `error`: session-related error message
+- `refreshSession()`: re-fetch the latest session from the backend
+- `signOut()`: sign the user out
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Using Session Data In The Dashboard
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Use the hook directly inside the dashboard page:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+```tsx
+import { useSession } from "../hooks/useSession";
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+const ClientDashboard = () => {
+  const { user, session, isAuthenticated, isLoading, signOut } = useSession();
+
+  if (isLoading) {
+    return <div>Loading dashboard...</div>;
+  }
+
+  if (!isAuthenticated || !user) {
+    return <div>No active session</div>;
+  }
+
+  return (
+    <div>
+      <h1>Welcome, {user.name ?? user.email}</h1>
+      <p>Email: {user.email}</p>
+      <p>User ID: {user.id}</p>
+      <p>Session ID: {String(session?.id ?? "N/A")}</p>
+
+      <button onClick={() => void signOut()}>Sign out</button>
+    </div>
+  );
+};
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Recommended Pattern For This Project
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+For [src/pages/ClientDashboard.tsx](/home/fixn/Documents/cni/frontend/src/pages/ClientDashboard.tsx):
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Import `useSession`.
+2. Read `user` from the hook.
+3. Replace hardcoded values like `JD` and demo text with real session values.
+
+Example:
+
+```tsx
+const { user } = useSession();
+
+const initials =
+  user?.name
+    ?.split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase() ?? "CN";
 ```
+
+Then use it like:
+
+```tsx
+<AvatarFallback>{initials}</AvatarFallback>
+<h1>Welcome back, {user?.name ?? "Client"}</h1>
+<p>{user?.email}</p>
+```
+
+## When To Use `session` vs `user`
+
+- Use `user` for UI: name, email, avatar, greeting, profile labels.
+- Use `session` for auth metadata: session id, expiry, future role flags, or audit info.
+
+## Future Upgrades
+
+This structure is ready for future additions such as:
+
+- role-based dashboards
+- admin/client branching
+- sign-out buttons in the navbar
+- refresh after profile updates
+- protected API calls using the same session state
+
+## Email Verification And Password Reset
+
+The frontend auth flow now supports:
+
+- email verification after sign-up
+- resend verification email
+- forgot password request
+- reset password form via emailed token
+
+Routes:
+
+- `/verify-email`
+- `/forgot-password`
+- `/reset-password`
+
+Backend endpoints used by the frontend:
+
+- `POST /api/auth/send-verification-email`
+- `GET /api/auth/verify-email`
+- `POST /api/auth/request-password-reset`
+- `POST /api/auth/reset-password`
+
+## Important Note
+
+Protected pages like `/dashboard` are already guarded by the router. That means:
+
+- signed-out users are redirected to `/login`
+- signed-in users are redirected away from `/login` and `/register`
+
+So inside the dashboard, you usually just read `user` and render the page.

@@ -3,14 +3,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "motion/react";
 import { ArrowRight, Globe, Sparkles, UserPlus } from "lucide-react";
 import { useForm } from "react-hook-form";
-import type { z } from "zod";
-
+import { type z } from "zod";
+import { Link, useNavigate } from "react-router-dom";
 import Particles from "../components/Particles";
 import { Button } from "../components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../components/ui/form";
 import { Input } from "../components/ui/input";
+import { useSession } from "../hooks/useSession";
 import { ROUTES } from "../lib/routes";
 import { signUpFormSchema } from "../types";
+import { useEffect, useState } from "react";
 
 type SignUpValues = z.infer<typeof signUpFormSchema>;
 
@@ -20,7 +22,16 @@ const signUpBenefits = [
   "Receive live updates as your application progresses",
 ];
 
+
+
 const SignUp = () => {
+
+
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [loading , setLoading] = useState(false);
+  const { signUp, clearError, error: sessionError } = useSession();
+  const navigate = useNavigate();
   const form = useForm<SignUpValues>({
     resolver: zodResolver(signUpFormSchema),
     defaultValues: {
@@ -31,8 +42,43 @@ const SignUp = () => {
     },
   });
 
-  const onSubmit = (_values: SignUpValues) => {
-    form.reset();
+  useEffect(() => {
+    clearError();
+  }, [clearError]);
+
+  const onSubmit = async (values: SignUpValues) => {
+    setMessage("");
+    setError("");
+    setLoading(true)
+    try {
+      const result = await signUp({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      });
+
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+
+      setMessage("Account Created Successfully");
+      form.reset();
+      navigate(ROUTES.VERIFY_EMAIL, {
+        replace: true,
+        state: { email: values.email },
+      });
+
+    } catch (error) {
+
+      console.error(error);
+      setError("Something went wrong");
+
+
+    }finally{
+      setLoading(false);
+    }
+    // console.log(values);
   };
 
   return (
@@ -86,6 +132,7 @@ const SignUp = () => {
                             placeholder="Your full name"
                             className="h-12 rounded-xl border-white/10 bg-background/70 px-4"
                             {...field}
+
                           />
                         </FormControl>
                         {fieldState.error && (
@@ -169,9 +216,16 @@ const SignUp = () => {
                       </FormItem>
                     )}
                   />
+                  {message && (
+                    <p className="text-green-500 text-sm mt-5 mb-5 ">{message}</p>
+                  )}
+                  {(error || sessionError) && (
+                    <p className="text-red-500 text-sm mt-5 mb-5 ">{error || sessionError}</p>
 
-                  <Button type="submit" className="h-12 w-full rounded-xl text-base">
-                    Sign Up
+                  )}
+
+                  <Button disabled={loading} type="submit" className="h-12 w-full rounded-xl text-base">
+                       {loading ? "Loading..." : "Sign Up"}
                     <ArrowRight />
                   </Button>
                 </form>
@@ -179,12 +233,12 @@ const SignUp = () => {
 
               <p className="mt-6 text-center text-sm text-muted-foreground">
                 Already have an account?{" "}
-                <a
-                  href={ROUTES.LOGIN}
+                <Link
+                  to={ROUTES.LOGIN}
                   className="font-medium text-primary hover:underline"
                 >
                   Sign in
-                </a>
+                </Link>
               </p>
             </div>
           </div>

@@ -7,7 +7,6 @@ import { Button } from "../components/ui/button";
 import type { CardProps } from "../components/Contries-card";
 
 export type Country = CardProps;
-
 export const COUNTRIES: Country[] = [
   {
     code: "CA",

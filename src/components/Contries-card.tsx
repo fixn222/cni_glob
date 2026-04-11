@@ -1,6 +1,7 @@
 // Responsive refresh: country cards now use proper chip wrapping and touch-friendly spacing.
 import { getApplicationRoute } from "../lib/routes";
 import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
 
 export interface CardProps {
   code: string;
@@ -73,9 +74,9 @@ const ContriesCard = ({
           className="mt-6 h-11 w-full rounded-xl"
           variant={selected ? "secondary" : "default"}
         >
-          <a href={getApplicationRoute(code)}>
-            {selected ? "Selected destination" : "Choose destination"}
-          </a>
+             <Link to={getApplicationRoute(code)}>
+             {selected ? "Selected destination" : "Choose destination"}
+                </Link>
         </Button>
       </div>
     </article>

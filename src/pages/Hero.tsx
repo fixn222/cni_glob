@@ -7,8 +7,7 @@ import { Button } from "../components/ui/button";
 
 const Hero = () => {
   return (
-       <section className="relative flex min-h-screen min-h-[100svh] items-center justify-center overflow-hidden px-4 pb-14 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:px-8">
-
+    <section className="relative flex min-h-screen min-h-[100svh] items-center justify-center overflow-hidden px-4 pb-14 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:px-8">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,#29a89a26,transparent_60%)]">
         <Particles
           particleColors={["#ffffff"]}
@@ -76,7 +75,7 @@ const Hero = () => {
             <img
               src="/cni1.png"
               alt="Applicant dashboard preview"
-              className="aspect-[4/4.6] w-full rounded-[1.5rem] object-cover shadow-xl transition-transform duration-500 hover:scale-[1.02]"
+              className=" w-full rounded-[1.5rem] object-cover shadow-xl transition-transform duration-500 hover:scale-[1.02]"
             />
           </div>
         </motion.div>

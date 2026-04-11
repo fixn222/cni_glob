@@ -4,15 +4,9 @@ import { ArrowBigDown, FlagIcon } from "lucide-react";
 
 import ContriesCard from "../components/Contries-card";
 import { Button } from "../components/ui/button";
+import type { CardProps } from "../components/Contries-card";
 
-export interface Country {
-  code: string;
-  name: string;
-  visaType: string[];
-  image: string;
-  flag: string;
-  popular?: boolean;
-}
+export type Country = CardProps;
 
 export const COUNTRIES: Country[] = [
   {
@@ -100,7 +94,9 @@ const Countries = () => {
                   delay: index * 0.05,
                 }}
               >
-                <ContriesCard {...country} />
+                <ContriesCard
+                  {...country}
+                />
               </motion.div>
             ))}
           </div>

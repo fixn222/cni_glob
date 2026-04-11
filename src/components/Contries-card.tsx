@@ -1,4 +1,5 @@
 // Responsive refresh: country cards now use proper chip wrapping and touch-friendly spacing.
+import { getApplicationRoute } from "../lib/routes";
 import { Button } from "./ui/button";
 
 export interface CardProps {
@@ -8,11 +9,26 @@ export interface CardProps {
   image: string;
   flag: string;
   popular?: boolean;
+  selected?: boolean;
 }
 
-const ContriesCard = ({ name, visaType, image, flag, popular }: CardProps) => {
+const ContriesCard = ({
+  code,
+  name,
+  visaType,
+  image,
+  flag,
+  popular,
+  selected,
+}: CardProps) => {
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/5 shadow-xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+    <article
+      className={`flex h-full flex-col overflow-hidden rounded-[1.5rem] border shadow-xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${
+        selected
+          ? "border-primary/40 bg-primary/10 ring-1 ring-primary/30"
+          : "border-white/10 bg-white/5"
+      }`}
+    >
       <div className="relative">
         <img
           src={image}
@@ -41,14 +57,26 @@ const ContriesCard = ({ name, visaType, image, flag, popular }: CardProps) => {
           {visaType.map((type) => (
             <span
               key={`${name}-${type}`}
-              className="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-medium text-muted-foreground"
+              className={`rounded-full border px-3 py-1 text-xs font-medium ${
+                selected
+                  ? "border-primary/20 bg-primary/10 text-foreground"
+                  : "border-white/10 bg-white/8 text-muted-foreground"
+              }`}
             >
               {type}
             </span>
           ))}
         </div>
 
-        <Button className="mt-6 h-11 w-full rounded-xl">Apply now</Button>
+        <Button
+          asChild
+          className="mt-6 h-11 w-full rounded-xl"
+          variant={selected ? "secondary" : "default"}
+        >
+          <a href={getApplicationRoute(code)}>
+            {selected ? "Selected destination" : "Choose destination"}
+          </a>
+        </Button>
       </div>
     </article>
   );

@@ -2,6 +2,10 @@ export const ROUTES = {
   HOME: "/",
   LOGIN: "/login",
   REGISTER: "/register",
+  VERIFY_EMAIL: "/verify-email",
+  FORGOT_PASSWORD: "/forgot-password",
+  RESET_PASSWORD: "/reset-password",
+  APPLICATION: "/application",
 
   ADMIN: {
     ROOT: "/admin",
@@ -17,3 +21,8 @@ export const ROUTES = {
     MESSAGES: "/dashboard/messages",
   },
 };
+
+export const getApplicationRoute = (destination?: string) =>
+  destination
+    ? `${ROUTES.APPLICATION}?destination=${encodeURIComponent(destination)}`
+    : ROUTES.APPLICATION;

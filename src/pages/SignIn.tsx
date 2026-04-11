@@ -3,14 +3,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "motion/react";
 import { ArrowRight, Brain, ShieldCheck, Sparkles } from "lucide-react";
 import { useForm } from "react-hook-form";
-import type { z } from "zod";
-
+import { type z } from "zod";
+import { useSession } from "../hooks/useSession";
 import Particles from "../components/Particles";
 import { Button } from "../components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "../components/ui/form";
 import { Input } from "../components/ui/input";
 import { ROUTES } from "../lib/routes";
 import { signInFormSchema } from "../types";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 type SignInValues = z.infer<typeof signInFormSchema>;
 
@@ -21,6 +29,17 @@ const signInHighlights = [
 ];
 
 const SignIn = () => {
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const { signIn, clearError, error: sessionError } = useSession();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo =
+    (location.state as { from?: { pathname?: string } } | null)?.from
+      ?.pathname || ROUTES.CLIENT.ROOT;
+
   const form = useForm<SignInValues>({
     resolver: zodResolver(signInFormSchema),
     defaultValues: {
@@ -29,8 +48,43 @@ const SignIn = () => {
     },
   });
 
-  const onSubmit = (_values: SignInValues) => {
-    form.reset();
+  useEffect(() => {
+    clearError();
+  }, [clearError]);
+
+  const onSubmit = async (values: SignInValues) => {
+    setError("");
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const result = await signIn({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (result.error) {
+        if (result.code === "EMAIL_NOT_VERIFIED") {
+          navigate(ROUTES.VERIFY_EMAIL, {
+            replace: true,
+            state: { email: values.email, autoSent: true },
+          });
+          return;
+        }
+
+        setError(result.error);
+        return;
+      }
+
+      setMessage("Welcome back");
+      form.reset();
+      navigate(redirectTo, { replace: true });
+    } catch (error) {
+      console.error(error);
+      setError("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -117,13 +171,18 @@ const SignIn = () => {
               </div>
 
               <Form {...form}>
-                <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
+                <form
+                  className="space-y-5"
+                  onSubmit={form.handleSubmit(onSubmit)}
+                >
                   <FormField
                     control={form.control}
                     name="email"
                     render={({ field, fieldState }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-medium">Email</FormLabel>
+                        <FormLabel className="text-sm font-medium">
+                          Email
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="email"
@@ -150,9 +209,12 @@ const SignIn = () => {
                           <FormLabel className="text-sm font-medium">
                             Password
                           </FormLabel>
-                          <a href="#" className="text-sm text-primary hover:underline">
+                          <Link
+                            to={ROUTES.FORGOT_PASSWORD}
+                            className="text-sm text-primary hover:underline"
+                          >
                             Forgot password?
-                          </a>
+                          </Link>
                         </div>
                         <FormControl>
                           <Input
@@ -171,8 +233,23 @@ const SignIn = () => {
                     )}
                   />
 
-                  <Button type="submit" className="h-12 w-full rounded-xl text-base">
-                    Sign In
+                  {message && (
+                    <p className="text-green-500 text-sm mt-5 mb-5 ">
+                      {message}
+                    </p>
+                  )}
+                  {(error || sessionError) && (
+                    <p className="text-red-500 text-sm mt-5 mb-5 ">
+                      {error || sessionError}
+                    </p>
+                  )}
+
+                  <Button
+                    type="submit"
+                    className="h-12 w-full rounded-xl text-base"
+                    disabled={loading}
+                  >
+                    {loading ? "Loading..." : "Sign In"}
                     <ArrowRight />
                   </Button>
                 </form>
@@ -180,12 +257,12 @@ const SignIn = () => {
 
               <p className="mt-6 text-center text-sm text-muted-foreground">
                 New here?{" "}
-                <a
-                  href={ROUTES.REGISTER}
+                <Link
+                  to={ROUTES.REGISTER}
                   className="font-medium text-primary hover:underline"
                 >
                   Create an account
-                </a>
+                </Link>
               </p>
             </div>
           </div>

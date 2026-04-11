@@ -1,33 +1,56 @@
-// Route shell: render the landing page or auth screens from the current pathname without adding router dependencies.
-import Countries from "./pages/Countries"
-import CTA from "./pages/CTA"
-import Footer from "./pages/Footer"
-import Hero from "./pages/Hero"
-import Service from "./pages/Service"
-import SignIn from "./pages/SignIn"
-import SignUp from "./pages/SignUp"
-import Testimonials from "./pages/Testimonials"
-import { ROUTES } from "./lib/routes"
+import { Route, Routes, useLocation } from "react-router-dom";
 
-const App = ({ pathname }: { pathname: string }) => {
-  if (pathname === ROUTES.LOGIN) {
-    return <SignIn />
-  }
+import NavBar from "./components/navbar.tsx";
+import { ProtectedRoute, PublicOnlyRoute } from "./components/SessionGate";
+import ApplicationPage from "./pages/ApplicationPage";
+import Countries from "./pages/Countries";
+import CTA from "./pages/CTA";
+import ForgotPassword from "./pages/ForgotPassword";
+import Footer from "./pages/Footer";
+import Hero from "./pages/Hero";
+import ClientDashboard from "./pages/ClientDashboard";
+import ResetPassword from "./pages/ResetPassword";
+import Service from "./pages/Service";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+import Testimonials from "./pages/Testimonials";
+import VerifyEmail from "./pages/VerifyEmail";
+import { ROUTES } from "./lib/routes";
 
-  if (pathname === ROUTES.REGISTER) {
-    return <SignUp />
-  }
+const Home = () => (
+  <>
+    <Hero />
+    <Service />
+    <CTA />
+    <Countries />
+    <Testimonials />
+    <Footer />
+  </>
+);
+
+const App = () => {
+  const location = useLocation();
 
   return (
-    <div>
-      <Hero />
-      <Service />
-      <CTA />
-      <Countries />
-      <Testimonials />
-      <Footer />
-    </div>
-  )
-}
+    <>
+      <NavBar pathname={location.pathname} />
 
-export default App
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path={ROUTES.APPLICATION} element={<ApplicationPage search={""} />} />
+        <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmail />} />
+        <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
+        <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
+        <Route element={<PublicOnlyRoute />}>
+          <Route path={ROUTES.LOGIN} element={<SignIn />} />
+          <Route path={ROUTES.REGISTER} element={<SignUp />} />
+        </Route>
+        <Route element={<ProtectedRoute />}>
+          <Route path={ROUTES.CLIENT.ROOT} element={<ClientDashboard />} />
+        </Route>
+      </Routes>
+    </>
+  );
+};
+
+export default App;

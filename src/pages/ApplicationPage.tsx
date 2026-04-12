@@ -1,16 +1,27 @@
 import { ArrowLeft } from "lucide-react";
 import { motion } from "motion/react";
+import { useEffect } from "react";
 
 import ApplicationDetailsView from "../components/ApplicationDetailsView";
 import { Button } from "../components/ui/button";
-import { COUNTRIES } from "./Countries";
 import { ROUTES } from "../lib/routes";
+import { useLocation } from "react-router-dom";
+import { useCountries } from "../context/CountyContext";
 
-const ApplicationPage = ({ search }: { search: string }) => {
-  const params = new URLSearchParams(search);
+const ApplicationPage = () => {
+  const { countries, selectedCountryCode, setSelectedCountryCode } = useCountries();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
   const destination = params.get("destination");
+  const activeCode = destination ?? selectedCountryCode;
   const selectedCountry =
-    COUNTRIES.find((country) => country.code === destination) ?? null;
+    countries.find((country) => country.code === activeCode) ?? null;
+
+  useEffect(() => {
+    if (destination && destination !== selectedCountryCode) {
+      setSelectedCountryCode(destination);
+    }
+  }, [destination, selectedCountryCode, setSelectedCountryCode]);
 
   return (
     <section className="relative min-h-screen overflow-hidden px-4 pb-16 pt-28 sm:px-6 sm:pb-20 lg:px-8">

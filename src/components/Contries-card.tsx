@@ -2,15 +2,10 @@
 import { getApplicationRoute } from "../lib/routes";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+import type { Country } from "../context/CountyContext";
 
-export interface CardProps {
-  code: string;
-  name: string;
-  visaType: string[];
-  image: string;
-  flag: string;
-  popular?: boolean;
-  selected?: boolean;
+export interface CardProps extends Country {
+  onSelect?: () => void;
 }
 
 const ContriesCard = ({
@@ -21,6 +16,7 @@ const ContriesCard = ({
   flag,
   popular,
   selected,
+  onSelect,
 }: CardProps) => {
   return (
     <article
@@ -51,11 +47,13 @@ const ContriesCard = ({
               Visa support available
             </p>
           </div>
-          <div className="text-2xl">{flag}</div>
+          <div className="h-[14px] w-[40px]">
+            <img src={flag} alt="flag" />
+          </div>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          {visaType.map((type) => (
+          {visaType?.map((type) => (
             <span
               key={`${name}-${type}`}
               className={`rounded-full border px-3 py-1 text-xs font-medium ${
@@ -74,7 +72,7 @@ const ContriesCard = ({
           className="mt-6 h-11 w-full rounded-xl"
           variant={selected ? "secondary" : "default"}
         >
-             <Link to={getApplicationRoute(code)}>
+             <Link to={getApplicationRoute(code)} onClick={onSelect}>
              {selected ? "Selected destination" : "Choose destination"}
                 </Link>
         </Button>

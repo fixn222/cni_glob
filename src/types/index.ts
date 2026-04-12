@@ -41,3 +41,21 @@ export const resetPasswordFormSchema = z
     message: "Passwords must match",
     path: ["confirmPassword"],
   })
+
+export const applicationFormSchema = z.object({
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
+  passportNumber: z
+    .string()
+    .min(6, "Passport number must be at least 6 characters")
+    .max(20, "Passport number must be 20 characters or fewer"),
+  nationality: z.string().min(2, "Nationality is required"),
+  email: z.email("Enter a valid email address"),
+  visaType: z.string().min(1, "Select a visa type"),
+  travelPurpose: z.string().min(1, "Select a travel purpose"),
+  travelDate: z.string().min(1, "Select an intended travel date"),
+  durationOfStay: z.string().min(2, "Enter the duration of stay"),
+  additionalNotes: z
+    .string()
+    .max(500, "Additional notes must be 500 characters or fewer")
+    .optional(),
+})

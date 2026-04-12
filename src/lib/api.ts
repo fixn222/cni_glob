@@ -1,6 +1,3 @@
-const API_URL = import.meta.env.VITE_API_URL;
-
-
 export const fetchCountries = async () =>{
     const res = await fetch(`http://localhost:8000/api/countries`);
      const data = await res.json();

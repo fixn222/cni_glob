@@ -4,48 +4,17 @@ import { ArrowBigDown, FlagIcon } from "lucide-react";
 
 import ContriesCard from "../components/Contries-card";
 import { Button } from "../components/ui/button";
-import type { CardProps } from "../components/Contries-card";
-
-export type Country = CardProps;
-export const COUNTRIES: Country[] = [
-  {
-    code: "CA",
-    name: "Canada",
-    visaType: ["Tourist", "Student", "Work"],
-    image:
-      "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?q=80&w=1200&auto=format&fit=crop",
-    flag: "🇨🇦",
-    popular: true,
-  },
-  {
-    code: "AU",
-    name: "Australia",
-    visaType: ["Tourist", "Student", "Work"],
-    image:
-      "https://images.unsplash.com/photo-1506976785307-8732e854ad03?q=80&w=1200&auto=format&fit=crop",
-    flag: "🇦🇺",
-    popular: true,
-  },
-  {
-    code: "UK",
-    name: "United Kingdom",
-    visaType: ["Tourist", "Student", "Work"],
-    image:
-      "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=1200&auto=format&fit=crop",
-    flag: "🇬🇧",
-    popular: true,
-  },
-  {
-    code: "US",
-    name: "United States",
-    visaType: ["Tourist", "Student", "Work"],
-    image:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop",
-    flag: "🇺🇸",
-  },
-];
+import { useCountries } from "../context/CountyContext";
 
 const Countries = () => {
+  const {
+    countries,
+    error,
+    loading,
+    selectedCountryCode,
+    setSelectedCountryCode,
+  } = useCountries();
+
   return (
     <section
       id="countries"
@@ -80,25 +49,37 @@ const Countries = () => {
             </p>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
-            {COUNTRIES.map((country, index) => (
-              <motion.div
-                key={country.code}
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{
-                  duration: 0.35,
-                  ease: "easeOut",
-                  delay: index * 0.05,
-                }}
-              >
-                <ContriesCard
-                  {...country}
-                />
-              </motion.div>
-            ))}
-          </div>
+          {loading ? (
+            <div className="mt-8 rounded-3xl border border-white/10 bg-white/5 p-6 text-sm text-muted-foreground backdrop-blur-xl">
+              Loading countries...
+            </div>
+          ) : error ? (
+            <div className="mt-8 rounded-3xl border border-destructive/30 bg-destructive/10 p-6 text-sm text-destructive">
+              {error}
+            </div>
+          ) : (
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+              {countries.map((country, index) => (
+                <motion.div
+                  key={country.code}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.15 }}
+                  transition={{
+                    duration: 0.35,
+                    ease: "easeOut",
+                    delay: index * 0.05,
+                  }}
+                >
+                  <ContriesCard
+                    {...country}
+                    selected={selectedCountryCode === country.code}
+                    onSelect={() => setSelectedCountryCode(country.code)}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          )}
 
           <div className="mt-6 flex justify-center lg:justify-start">
             <Button

@@ -37,7 +37,7 @@ const App = () => {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path={ROUTES.APPLICATION} element={<ApplicationPage search={""} />} />
+        <Route path={ROUTES.APPLICATION} element={<ApplicationPage />} />
         <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmail />} />
         <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
         <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />

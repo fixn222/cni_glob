@@ -6,15 +6,19 @@ import App from "./App";
 import { SessionProvider } from "./providers/SessionProvider.tsx";
 import "./index.css";
 import { CountryProvider } from "./providers/CountryProvider.tsx";
+import { ApplicationProvider } from "./providers/ApplicationProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-        <CountryProvider>
-      <SessionProvider>
-          <App />
-      </SessionProvider>
-        </CountryProvider>
+      <CountryProvider>
+        <SessionProvider>
+          <ApplicationProvider>
+            <App />
+
+          </ApplicationProvider>
+        </SessionProvider>
+      </CountryProvider>
     </BrowserRouter>
   </StrictMode>
 );

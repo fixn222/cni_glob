@@ -29,13 +29,17 @@ const guestLinks = [
 const isActiveRoute = (pathname: string, href: string) => pathname === href;
 
 const NavBar = ({ pathname }: { pathname: string }) => {
-  const { isAuthenticated, isEmailVerified } = useSession();
+  const { isAuthenticated, isEmailVerified, user } = useSession();
   const onAuthPage =
     pathname === ROUTES.LOGIN || pathname === ROUTES.REGISTER;
   const authLinks = isAuthenticated
     ? [{
         label: isEmailVerified ? "Dashboard" : "Verify Email",
-        href: isEmailVerified ? ROUTES.CLIENT.ROOT : ROUTES.VERIFY_EMAIL,
+        href: isEmailVerified
+          ? user?.role === "admin"
+            ? ROUTES.ADMIN.ROOT
+            : ROUTES.CLIENT.ROOT
+          : ROUTES.VERIFY_EMAIL,
         variant: "default" as const,
       }]
     : guestLinks;

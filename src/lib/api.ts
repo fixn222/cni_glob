@@ -1,10 +1,14 @@
-export const fetchCountries = async () =>{
-    const res = await fetch(`http://localhost:8000/api/countries`);
-     const data = await res.json();
-    if (!res.ok) {
-        throw new Error("failed to fetch countries");
-        
-    }
-    // console.log(res.json())
-    return data;
+import { API_URL } from "./constants";
+
+export const fetchCountries = async () => {
+  const res = await fetch(`${API_URL}/api/countries`, {
+    credentials: "include",
+  });
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data?.message || "Failed to fetch countries");
+  }
+
+  return data;
 };

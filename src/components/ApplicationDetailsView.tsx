@@ -9,40 +9,29 @@ import {
   ShieldCheck,
   UserRound,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { type z } from "zod";
 
 import type { Country } from "../context/CountyContext";
 import { applicationFormSchema } from "../types";
 import { Button } from "./ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "./ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+import { useApplications } from "../context/ApplicationContext";
+// import { duration } from "node_modules/zod/v4/core/regexes.d.cts";
 
 interface ApplicationDetailsViewProps {
   country: Country | null;
 }
 
-const travelPurposes = [
-  "Tourism",
-  "Business",
-  "Study",
-  "Family visit",
-];
+const travelPurposes = ["Tourism", "Business", "Study", "Family visit"];
 
 type ApplicationFormValues = z.infer<typeof applicationFormSchema>;
 
-const ApplicationDetailsView = ({
-  country,
-}: ApplicationDetailsViewProps) => {
-  const [submitMessage, setSubmitMessage] = useState("");
+const ApplicationDetailsView = ({ country }: ApplicationDetailsViewProps) => {
+  const { createApplication, submitError, submitSuccess, submitting, clearSubmitStatus } = useApplications();
   const form = useForm<ApplicationFormValues>({
     resolver: zodResolver(applicationFormSchema),
     defaultValues: {
@@ -74,8 +63,8 @@ const ApplicationDetailsView = ({
       durationOfStay: "",
       additionalNotes: "",
     });
-    setSubmitMessage("");
-  }, [country, form]);
+    clearSubmitStatus();
+  }, [country, form, clearSubmitStatus]);
 
   if (!country) {
     return (
@@ -92,12 +81,39 @@ const ApplicationDetailsView = ({
     );
   }
 
-  const onSubmit = (values: ApplicationFormValues) => {
-    console.log("Application form submitted", {
+  const onSubmit = async (values: ApplicationFormValues) => {
+    const payload = {
       countryCode: country.code,
-      ...values,
-    });
-    setSubmitMessage(`Application details for ${country.name} are valid and ready.`);
+      clientDetails: {
+        fullName: values.fullName,
+        nationality: values.nationality,
+        passportNumber: values.passportNumber,
+      },
+      visaDetails: {
+        visaType: values.visaType,
+        purpose: values.travelPurpose,
+        travelDate: values.travelDate,
+        duration: values.durationOfStay,
+        notes: values.additionalNotes,
+      },
+    };
+
+    try {
+      await createApplication(payload);
+      form.reset({
+        fullName: "",
+        passportNumber: "",
+        nationality: "",
+        email: "",
+        visaType: country.visaType[0] ?? "",
+        travelPurpose: travelPurposes[0],
+        travelDate: "",
+        durationOfStay: "",
+        additionalNotes: "",
+      });
+    } catch {
+      // Error is handled by the provider
+    }
   };
 
   return (
@@ -176,7 +192,9 @@ const ApplicationDetailsView = ({
                   name="fullName"
                   render={({ field, fieldState }) => (
                     <FormItem className="space-y-2">
-                      <FormLabel className="text-sm font-medium">Full name</FormLabel>
+                      <FormLabel className="text-sm font-medium">
+                        Full name
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter full name"
@@ -185,7 +203,9 @@ const ApplicationDetailsView = ({
                         />
                       </FormControl>
                       {fieldState.error && (
-                        <p className="text-sm text-red-500">{fieldState.error.message}</p>
+                        <p className="text-sm text-red-500">
+                          {fieldState.error.message}
+                        </p>
                       )}
                     </FormItem>
                   )}
@@ -207,7 +227,9 @@ const ApplicationDetailsView = ({
                         />
                       </FormControl>
                       {fieldState.error && (
-                        <p className="text-sm text-red-500">{fieldState.error.message}</p>
+                        <p className="text-sm text-red-500">
+                          {fieldState.error.message}
+                        </p>
                       )}
                     </FormItem>
                   )}
@@ -218,7 +240,9 @@ const ApplicationDetailsView = ({
                   name="nationality"
                   render={({ field, fieldState }) => (
                     <FormItem className="space-y-2">
-                      <FormLabel className="text-sm font-medium">Nationality</FormLabel>
+                      <FormLabel className="text-sm font-medium">
+                        Nationality
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter nationality"
@@ -227,7 +251,9 @@ const ApplicationDetailsView = ({
                         />
                       </FormControl>
                       {fieldState.error && (
-                        <p className="text-sm text-red-500">{fieldState.error.message}</p>
+                        <p className="text-sm text-red-500">
+                          {fieldState.error.message}
+                        </p>
                       )}
                     </FormItem>
                   )}
@@ -238,7 +264,9 @@ const ApplicationDetailsView = ({
                   name="email"
                   render={({ field, fieldState }) => (
                     <FormItem className="space-y-2">
-                      <FormLabel className="text-sm font-medium">Contact email</FormLabel>
+                      <FormLabel className="text-sm font-medium">
+                        Contact email
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="email"
@@ -248,7 +276,9 @@ const ApplicationDetailsView = ({
                         />
                       </FormControl>
                       {fieldState.error && (
-                        <p className="text-sm text-red-500">{fieldState.error.message}</p>
+                        <p className="text-sm text-red-500">
+                          {fieldState.error.message}
+                        </p>
                       )}
                     </FormItem>
                   )}
@@ -262,7 +292,9 @@ const ApplicationDetailsView = ({
                   <FileText className="size-5 text-primary" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold">Visa Applying Details</h4>
+                  <h4 className="text-lg font-semibold">
+                    Visa Applying Details
+                  </h4>
                   <p className="text-sm text-muted-foreground">
                     Purpose, timing, and supporting notes for the case file.
                   </p>
@@ -275,7 +307,9 @@ const ApplicationDetailsView = ({
                   name="visaType"
                   render={({ field, fieldState }) => (
                     <FormItem className="space-y-2">
-                      <FormLabel className="text-sm font-medium">Visa type</FormLabel>
+                      <FormLabel className="text-sm font-medium">
+                        Visa type
+                      </FormLabel>
                       <FormControl>
                         <select
                           className="flex h-12 w-full rounded-xl border border-input bg-white/60 px-4 text-sm outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-background/40"
@@ -289,7 +323,9 @@ const ApplicationDetailsView = ({
                         </select>
                       </FormControl>
                       {fieldState.error && (
-                        <p className="text-sm text-red-500">{fieldState.error.message}</p>
+                        <p className="text-sm text-red-500">
+                          {fieldState.error.message}
+                        </p>
                       )}
                     </FormItem>
                   )}
@@ -300,7 +336,9 @@ const ApplicationDetailsView = ({
                   name="travelPurpose"
                   render={({ field, fieldState }) => (
                     <FormItem className="space-y-2">
-                      <FormLabel className="text-sm font-medium">Travel purpose</FormLabel>
+                      <FormLabel className="text-sm font-medium">
+                        Travel purpose
+                      </FormLabel>
                       <FormControl>
                         <select
                           className="flex h-12 w-full rounded-xl border border-input bg-white/60 px-4 text-sm outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-background/40"
@@ -314,7 +352,9 @@ const ApplicationDetailsView = ({
                         </select>
                       </FormControl>
                       {fieldState.error && (
-                        <p className="text-sm text-red-500">{fieldState.error.message}</p>
+                        <p className="text-sm text-red-500">
+                          {fieldState.error.message}
+                        </p>
                       )}
                     </FormItem>
                   )}
@@ -336,7 +376,9 @@ const ApplicationDetailsView = ({
                         />
                       </FormControl>
                       {fieldState.error && (
-                        <p className="text-sm text-red-500">{fieldState.error.message}</p>
+                        <p className="text-sm text-red-500">
+                          {fieldState.error.message}
+                        </p>
                       )}
                     </FormItem>
                   )}
@@ -347,7 +389,9 @@ const ApplicationDetailsView = ({
                   name="durationOfStay"
                   render={({ field, fieldState }) => (
                     <FormItem className="space-y-2">
-                      <FormLabel className="text-sm font-medium">Duration of stay</FormLabel>
+                      <FormLabel className="text-sm font-medium">
+                        Duration of stay
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="e.g. 14 days"
@@ -356,7 +400,9 @@ const ApplicationDetailsView = ({
                         />
                       </FormControl>
                       {fieldState.error && (
-                        <p className="text-sm text-red-500">{fieldState.error.message}</p>
+                        <p className="text-sm text-red-500">
+                          {fieldState.error.message}
+                        </p>
                       )}
                     </FormItem>
                   )}
@@ -369,7 +415,9 @@ const ApplicationDetailsView = ({
                   name="additionalNotes"
                   render={({ field, fieldState }) => (
                     <FormItem className="space-y-2">
-                      <FormLabel className="text-sm font-medium">Additional notes</FormLabel>
+                      <FormLabel className="text-sm font-medium">
+                        Additional notes
+                      </FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="Special travel history, urgency, interview notes, or supporting context."
@@ -378,7 +426,9 @@ const ApplicationDetailsView = ({
                         />
                       </FormControl>
                       {fieldState.error && (
-                        <p className="text-sm text-red-500">{fieldState.error.message}</p>
+                        <p className="text-sm text-red-500">
+                          {fieldState.error.message}
+                        </p>
                       )}
                     </FormItem>
                   )}
@@ -395,7 +445,9 @@ const ApplicationDetailsView = ({
                 <div className="flex items-start gap-3">
                   <ShieldCheck className="mt-0.5 size-5 text-primary" />
                   <div>
-                    <p className="text-sm font-semibold">Destination confirmed</p>
+                    <p className="text-sm font-semibold">
+                      Destination confirmed
+                    </p>
                     <p className="text-sm text-muted-foreground">
                       {country.flag} {country.name}
                     </p>
@@ -417,21 +469,27 @@ const ApplicationDetailsView = ({
                   <div>
                     <p className="text-sm font-semibold">Case readiness</p>
                     <p className="text-sm text-muted-foreground">
-                      Collect passport copy, photographs, bank proof, and itinerary.
+                      Collect passport copy, photographs, bank proof, and
+                      itinerary.
                     </p>
                   </div>
                 </div>
               </div>
 
-              {submitMessage && (
-                <p className="mt-5 text-sm text-green-600">{submitMessage}</p>
+              {submitSuccess && (
+                <p className="mt-3 text-sm text-green-600">{submitSuccess}</p>
+              )}
+
+              {submitError && (
+                <p className="mt-3 text-sm text-red-500">{submitError}</p>
               )}
 
               <Button
                 type="submit"
+                disabled={submitting}
                 className="mt-6 h-12 w-full rounded-xl text-sm font-semibold"
               >
-                Start Application
+                {submitting ? "Submitting..." : "Start Application"}
               </Button>
             </div>
 

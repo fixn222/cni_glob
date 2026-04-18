@@ -1,4 +1,3 @@
-// Auth and feedback schemas: keep landing-page dialogs and auth forms visually aligned while validating inputs.
 import { z } from "zod"
 
 export const feedBackFormSchema = z.object({

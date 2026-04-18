@@ -1,5 +1,5 @@
 import { API_URL } from "./constants";
-const AUTH_BASE_URL = API_URL ?? "http://localhost:8000";
+const AUTH_BASE_URL = API_URL;
 
 export type SessionUser = {
   id: string;
@@ -7,6 +7,7 @@ export type SessionUser = {
   email: string;
   image?: string | null;
   emailVerified?: boolean;
+  role?: "user" | "admin";
 };
 
 export type SessionData = {

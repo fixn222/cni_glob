@@ -7,8 +7,10 @@ import { defineConfig } from "vite"
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
+    preserveSymlinks: true,
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@admin": path.resolve(__dirname, "./src/admin"),
     },
   },
 })

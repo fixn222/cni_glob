@@ -36,6 +36,35 @@ export const ProtectedRoute = () => {
   return <Outlet />;
 };
 
+export const AdminRoute = () => {
+  const location = useLocation();
+  const { isAuthenticated, isLoading, isEmailVerified, user } = useSession();
+
+  if (isLoading) {
+    return <SessionFallback />;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to={ROUTES.LOGIN} replace state={{ from: location }} />;
+  }
+
+  if (!isEmailVerified) {
+    return (
+      <Navigate
+        to={ROUTES.VERIFY_EMAIL}
+        replace
+        state={{ email: user?.email }}
+      />
+    );
+  }
+
+  if (user?.role !== "admin") {
+    return <Navigate to={ROUTES.CLIENT.ROOT} replace />;
+  }
+
+  return <Outlet />;
+};
+
 export const PublicOnlyRoute = () => {
   const { isAuthenticated, isLoading, isEmailVerified, user } = useSession();
 
